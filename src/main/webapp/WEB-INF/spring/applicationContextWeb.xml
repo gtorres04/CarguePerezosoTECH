@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    	<context:component-scan base-package="com.tech.web.prueba" />
+		<mvc:annotation-driven/>
+	
+       <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+         <property name="prefix" value="/WEB-INF/views/"></property>
+         <property name="suffix" value=".jsp"></property>        
+       </bean>
+       <mvc:resources mapping="/frameworks-js/**" location="/WEB-INF/assets/js/"  cache-period="31556926"/>
+       <mvc:resources mapping="/frameworks-css/**" location="/WEB-INF/assets/css/"  cache-period="31556926"/>
+       <!-- 
+       <mvc:resources mapping="/frameworks-fonts/**" location="/resources/fonts/"  cache-period="31556926"/>
+       <mvc:resources mapping="/modulo-ng-proveedor/**" location="/resources/js/modulos/admon-proveedor/"  cache-period="31556926"/>
+       <mvc:resources mapping="/modulo-css-proveedor/**" location="/resources/css/modulos/admon-proveedor/"  cache-period="31556926"/>
+       -->
+       <bean id="miDiskFileItemFactory" class="org.apache.commons.fileupload.disk.DiskFileItemFactory"/>
+	    <bean name="miServletFileUpload" class="org.apache.commons.fileupload.servlet.ServletFileUpload">
+	        <constructor-arg index="0">
+	            <ref bean="miDiskFileItemFactory" />
+	        </constructor-arg>
+	        <property name="sizeMax" value="1048576" />
+	    </bean>
+       
+</beans>
