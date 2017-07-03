@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
@@ -33,27 +32,32 @@ public class Utilidades {
 	 * instancia logger
 	 */
 	private static final AdmonLogger LOGGER = AdmonLogger.getInstance(Logger.getLogger(Utilidades.class));
-	
-	private Utilidades(){}
-	
+
+	private Utilidades() {
+	}
+
 	/**
 	 * Se obtiene el arreglo del viaje que menos peso tiene.
 	 * 
 	 * @return
 	 */
 	public static int[] getViajeMenosPesado(List<int[]> viajesArticulos) {
-		int[] viajeMenor = viajesArticulos.get(0);
-		int sumatoriaAnterior = -1;
-		for (int[] pesoArticulos : viajesArticulos) {
-			int sumatorioPeso = 0;
-			for (int peso : pesoArticulos) {
-				sumatorioPeso += peso;
-			}
-			if (-1 != sumatoriaAnterior && sumatorioPeso < sumatoriaAnterior) {
-				viajeMenor = pesoArticulos;
-			}
+		int[] viajeMenor = new int[0];
+		if (!viajesArticulos.isEmpty()) {
+			viajeMenor = viajesArticulos.get(0);
+			int sumatoriaAnterior = -1;
+			for (int[] pesoArticulos : viajesArticulos) {
+				int sumatorioPeso = 0;
+				for (int peso : pesoArticulos) {
+					sumatorioPeso += peso;
+				}
+				if (-1 != sumatoriaAnterior && sumatorioPeso < sumatoriaAnterior) {
+					viajeMenor = pesoArticulos;
+				}
 
+			}
 		}
+
 		return viajeMenor;
 	}
 
@@ -76,7 +80,7 @@ public class Utilidades {
 
 		return listaArticulosATrastear;
 	}
-	
+
 	/**
 	 * Se obtiene una instancia de tipo Archivo a partir de un Archivo de tipo
 	 * FileItem.
@@ -92,7 +96,7 @@ public class Utilidades {
 			archivo = new ArchivoDto();
 			String nombre = fileItem.getName();
 			String[] nombreArchivo = nombre.split("\\.");
-			if(!"txt".equals(nombreArchivo[1])){
+			if (!"txt".equals(nombreArchivo[1])) {
 				throw new CargaPerezosaException(Mensajes.ERROR_EXTENSION_ARCHIVO.getMensaje());
 			}
 			archivo.setNombreOriginal(nombreArchivo[0]);
@@ -107,7 +111,7 @@ public class Utilidades {
 						Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA.getMensaje(), archivoADisco.getAbsolutePath()));
 			}
 			File inputFile = new File(archivoADisco.getAbsolutePath());
-			FileInputStream inputStream;
+			FileInputStream inputStream = null;
 			try {
 				inputStream = new FileInputStream(inputFile);
 			} catch (FileNotFoundException e) {
@@ -130,7 +134,7 @@ public class Utilidades {
 		}
 		return archivo;
 	}
-	
+
 	/**
 	 * Guarda un archivo temporar en la carpeta home del usuario en sesion.
 	 * 
@@ -140,7 +144,8 @@ public class Utilidades {
 	 * @throws CargaPerezosaException
 	 * @throws IOException
 	 */
-	public static String guardarArchivoFisicamente(byte[] archivo, String extension, String ruta) throws CargaPerezosaException {
+	public static String guardarArchivoFisicamente(byte[] archivo, String extension, String ruta)
+			throws CargaPerezosaException {
 		File carpetaTemporal;
 		carpetaTemporal = new File(ruta);
 		File temp = null;
@@ -164,7 +169,7 @@ public class Utilidades {
 		}
 		return temp.getName();
 	}
-	
+
 	/**
 	 * Se obtiene el arreglo de Byte a partir del nombre temporal del archivo.
 	 * 
@@ -185,7 +190,7 @@ public class Utilidades {
 		}
 		return data;
 	}
-	
+
 	/**
 	 * Escribe en un archivo un texto, sino existe el archivo lo crea.
 	 * 
@@ -210,7 +215,7 @@ public class Utilidades {
 		}
 
 	}
-	
+
 	/**
 	 * Obtener la cadena del archivo completa.
 	 * 
@@ -240,7 +245,7 @@ public class Utilidades {
 		}
 		return cadenaArchivo.toString();
 	}
-	
+
 	/**
 	 * Descargar el archivo en cliente.
 	 * 
@@ -252,8 +257,8 @@ public class Utilidades {
 	 * @param extensionArchivo
 	 * @throws CargaPerezosaException
 	 */
-	public static void descargaArchivoEnCliente(byte[] archivo, String mimeType,
-			HttpServletResponse response, String nombreArchivo, String extensionArchivo) throws CargaPerezosaException {
+	public static void descargaArchivoEnCliente(byte[] archivo, String mimeType, HttpServletResponse response,
+			String nombreArchivo, String extensionArchivo) throws CargaPerezosaException {
 		try {
 			byte[] archivoADescargar = archivo;
 
