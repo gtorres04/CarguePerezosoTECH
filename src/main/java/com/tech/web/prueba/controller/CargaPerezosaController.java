@@ -60,8 +60,7 @@ public class CargaPerezosaController {
 			Utilidades.descargaArchivoEnCliente(archivo, mimeType, request, response, nombreArchivo,
 					extensionArchivo);
 		} catch (CargaPerezosaException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
