@@ -9,10 +9,10 @@ package com.tech.web.prueba.dominio;
  */
 public class DiaDeTrabajo {
 	
-	private ArticuloATrastiar[] articulosATrastiar;
+	private ArticuloATrastear[] articulosATrastiar;
 	
 	public DiaDeTrabajo(int cantidadDeArticulos){
-		articulosATrastiar = new ArticuloATrastiar[cantidadDeArticulos];
+		articulosATrastiar = new ArticuloATrastear[cantidadDeArticulos];
 	}
 	
 	public DiaDeTrabajo(){}
@@ -20,14 +20,14 @@ public class DiaDeTrabajo {
 	/**
 	 * @return the articulosATrastiar
 	 */
-	public ArticuloATrastiar[] getArticulosATrastiar() {
+	public ArticuloATrastear[] getArticulosATrastiar() {
 		return articulosATrastiar;
 	}
 
 	/**
 	 * @param articulosATrastiar the articulosATrastiar to set
 	 */
-	public void setArticulosATrastiar(ArticuloATrastiar[] articulosATrastiar) {
+	public void setArticulosATrastiar(ArticuloATrastear[] articulosATrastiar) {
 		this.articulosATrastiar = articulosATrastiar;
 	}
 	

@@ -7,7 +7,7 @@ package com.tech.web.prueba.dominio;
  * @author gerlinorlandotorressaavedra
  *
  */
-public class ArticuloATrastiar {
+public class ArticuloATrastear {
 	
 	private String nombre;
 	private int peso;

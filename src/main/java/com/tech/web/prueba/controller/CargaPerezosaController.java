@@ -1,9 +1,5 @@
 package com.tech.web.prueba.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +23,7 @@ import com.tech.web.prueba.service.ICargaPerezosaService;
 import com.tech.web.prueba.support.AdmonLogger;
 import com.tech.web.prueba.support.Constantes.Mensajes;
 import com.tech.web.prueba.support.ConstantesMappingURL;
+import com.tech.web.prueba.support.Utilidades;
 
 @Controller
 public class CargaPerezosaController {
@@ -60,7 +57,7 @@ public class CargaPerezosaController {
 		String mimeType = archivoDto.getMimeType();
 		String extensionArchivo = archivoDto.getExtension();
 		try {
-			iCargaPerezosaService.descargaArchivoEnCliente(archivo, mimeType, request, response, nombreArchivo,
+			Utilidades.descargaArchivoEnCliente(archivo, mimeType, request, response, nombreArchivo,
 					extensionArchivo);
 		} catch (CargaPerezosaException e) {
 			// TODO Auto-generated catch block
@@ -97,10 +94,8 @@ public class CargaPerezosaController {
 						trazaIntentoDto.setCedula(fieldvalue);
 					} else {
 						ArchivoDto archivo;
-
-						archivo = getArchivoByFileItem(item);
+						archivo = Utilidades.getArchivoByFileItem(item);
 						trazaIntentoDto.setArchivoInput(archivo);
-
 					}
 				}
 				iCargaPerezosaService.procesarEntrada(trazaIntentoDto);
@@ -115,57 +110,5 @@ public class CargaPerezosaController {
 		return view;
 	}
 
-	/**
-	 * Se obtiene una instancia de tipo Archivo a partir de un Archivo de tipo
-	 * FileItem.
-	 * 
-	 * @param fileItem
-	 * @return una instancia de tipo Archivo.
-	 * @throws CargaPerezosaException
-	 * @throws Exception
-	 */
-	private ArchivoDto getArchivoByFileItem(FileItem fileItem) throws CargaPerezosaException {
-		ArchivoDto archivo = null;
-		if (!fileItem.isFormField()) {
-			archivo = new ArchivoDto();
-			String nombre = fileItem.getName();
-			String[] nombreArchivo = nombre.split("\\.");
-			if(!"txt".equals(nombreArchivo[1])){
-				throw new CargaPerezosaException(Mensajes.ERROR_EXTENSION_ARCHIVO.getMensaje());
-			}
-			archivo.setNombreOriginal(nombreArchivo[0]);
-			archivo.setExtension(nombreArchivo[1]);
-			archivo.setMimeType(fileItem.getContentType());
-			File archivoADisco = new File(nombre);
-			archivoADisco = new File(archivoADisco.getName());
-			try {
-				fileItem.write(archivoADisco);
-			} catch (Exception e) {
-				throw new CargaPerezosaException(String.format(
-						Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA.getMensaje(), archivoADisco.getAbsolutePath()));
-			}
-			File inputFile = new File(archivoADisco.getAbsolutePath());
-			FileInputStream inputStream;
-			try {
-				inputStream = new FileInputStream(inputFile);
-			} catch (FileNotFoundException e) {
-				throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(),
-						archivoADisco.getAbsolutePath()));
-			}
-			byte[] fileBytes = new byte[(int) inputFile.length()];
-			try {
-				inputStream.read(fileBytes);
-				inputStream.close();
-			} catch (IOException e) {
-				throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_LECTURA.getMensaje(),
-						archivoADisco.getAbsolutePath()));
-			}
-			archivo.setArchivo(fileBytes);
-			if (inputFile.delete())
-				LOGGER.debug("El fichero ha sido borrado satisfactoriamente");
-			else
-				LOGGER.debug("El fichero no puede ser borrado");
-		}
-		return archivo;
-	}
+	
 }

@@ -7,19 +7,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.tech.web.prueba.dominio.ArticuloATrastiar;
+import com.tech.web.prueba.dominio.ArticuloATrastear;
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
-import com.tech.web.prueba.service.impl.CargaPerezosaServiceImpl;
 import com.tech.web.prueba.support.AdmonLogger;
 import com.tech.web.prueba.support.Constantes.Mensajes;
+import com.tech.web.prueba.support.Utilidades;
 
 /**
  * @author gerlinorlandotorressaavedra
@@ -65,7 +64,52 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		ordenDelArticuloEnGestion = 0;
 		return this.itinerarioDeTrabajo;
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio#
+	 * maximoNumeroDeViajesEnElDia(com.tech.web.prueba.dominio.DiaDeTrabajo)
+	 */
+	@Override
+	public int maximoNumeroDeViajesEnElDia(DiaDeTrabajo diaDeTrabajo) {
+		List<Integer> pesosArticulos = Utilidades.getCollectionDePesosDeLosArticulosDelDia(diaDeTrabajo.getArticulosATrastiar());
+		List<int[]> viajesArticulos = new ArrayList<>();
+		while (!pesosArticulos.isEmpty()) {
+			int peso = pesosArticulos.get(0);
+			int numeroDeProductosDebajoDeEl = (int) (Math.ceil(50.0 / peso) - 1);
+			if ((numeroDeProductosDebajoDeEl + 1) > pesosArticulos.size()) {
+				int[] viajeMenor = Utilidades.getViajeMenosPesado(viajesArticulos);
+				int[] viajeNuevoAgregandoUltimosArticulos = new int[viajeMenor.length + pesosArticulos.size()];
+				int i = 0;
+				for (i = 0; i < viajeMenor.length; i++) {
+					viajeNuevoAgregandoUltimosArticulos[i] = viajeMenor[i];
+				}
+				for (int pesoRestante : pesosArticulos) {
+					viajeNuevoAgregandoUltimosArticulos[i++] = pesoRestante;
+				}
+				viajesArticulos.remove(viajeMenor);
+				viajesArticulos.add(viajeNuevoAgregandoUltimosArticulos);
+				pesosArticulos.removeAll(pesosArticulos);
+				continue;
+			}
+			pesosArticulos.remove(0);
+			int[] viajeDeArticulos = new int[numeroDeProductosDebajoDeEl + 1];
+			int index = 0;
+			viajeDeArticulos[index++] = peso;
+			if (1 <= numeroDeProductosDebajoDeEl) {
+				int controlIndiceAgregar = numeroDeProductosDebajoDeEl;
+				while (0 < controlIndiceAgregar)
+					viajeDeArticulos[index++] = pesosArticulos.get(pesosArticulos.size() - (controlIndiceAgregar--));
+				controlIndiceAgregar = numeroDeProductosDebajoDeEl;
+				for (int i = 0; i < controlIndiceAgregar; i++) {
+					pesosArticulos.remove(pesosArticulos.size() - 1);
+				}
+			}
+			viajesArticulos.add(viajeDeArticulos);
+		}
+		return viajesArticulos.size();
+	}
+	
 	/**
 	 * Recorre el archivo y se toman los datos del archivo Input.
 	 * 
@@ -158,9 +202,9 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 			LOGGER.warn(e);
 			throw new CargaPerezosaException(Mensajes.ERROR_CASTING_CANTIDAD_ARTICULOS_TRASTEAR.getMensaje());
 		}
-		ArticuloATrastiar[] articulosATrastiar = new ArticuloATrastiar[cantidadDeArticuloAtrastear];
+		ArticuloATrastear[] articulosATrastiar = new ArticuloATrastear[cantidadDeArticuloAtrastear];
 		for (int i = 0; i < articulosATrastiar.length; i++) {
-			articulosATrastiar[i] = new ArticuloATrastiar();
+			articulosATrastiar[i] = new ArticuloATrastear();
 		}
 		itinerarioDeTrabajo[this.ordenDelDiaEnGestion].setArticulosATrastiar(articulosATrastiar);
 		this.agregarCantidadArticulosDeldia = false;
@@ -192,93 +236,6 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio#
-	 * maximoNumeroDeViajesEnElDia(com.tech.web.prueba.dominio.DiaDeTrabajo)
-	 */
-	@Override
-	public int maximoNumeroDeViajesEnElDia(DiaDeTrabajo diaDeTrabajo) {
-		List<Integer> pesosArticulos = getCollectionDePesosDeLosArticulosDelDia(diaDeTrabajo.getArticulosATrastiar());
-		List<int[]> viajesArticulos = new ArrayList<>();
-		while (!pesosArticulos.isEmpty()) {
-			int peso = pesosArticulos.get(0);
-			int numeroDeProductosDebajoDeEl = (int) (Math.ceil(50.0 / peso) - 1);
-			if ((numeroDeProductosDebajoDeEl + 1) > pesosArticulos.size()) {
-				int[] viajeMenor = getViajeMenosPesado(viajesArticulos);
-				int[] viajeNuevoAgregandoUltimosArticulos = new int[viajeMenor.length + pesosArticulos.size()];
-				int i = 0;
-				for (i = 0; i < viajeMenor.length; i++) {
-					viajeNuevoAgregandoUltimosArticulos[i] = viajeMenor[i];
-				}
-				for (int pesoRestante : pesosArticulos) {
-					viajeNuevoAgregandoUltimosArticulos[i++] = pesoRestante;
-				}
-				viajesArticulos.remove(viajeMenor);
-				viajesArticulos.add(viajeNuevoAgregandoUltimosArticulos);
-				pesosArticulos.removeAll(pesosArticulos);
-				continue;
-			}
-			pesosArticulos.remove(0);
-			int[] viajeDeArticulos = new int[numeroDeProductosDebajoDeEl + 1];
-			int index = 0;
-			viajeDeArticulos[index++] = peso;
-			if (1 <= numeroDeProductosDebajoDeEl) {
-				int controlIndiceAgregar = numeroDeProductosDebajoDeEl;
-				while (0 < controlIndiceAgregar)
-					viajeDeArticulos[index++] = pesosArticulos.get(pesosArticulos.size() - (controlIndiceAgregar--));
-				controlIndiceAgregar = numeroDeProductosDebajoDeEl;
-				for (int i = 0; i < controlIndiceAgregar; i++) {
-					pesosArticulos.remove(pesosArticulos.size() - 1);
-				}
-			}
-			viajesArticulos.add(viajeDeArticulos);
-		}
-		return viajesArticulos.size();
-	}
-
-	/**
-	 * Se obtiene el arreglo del viaje que menos peso tiene.
-	 * 
-	 * @return
-	 */
-	private int[] getViajeMenosPesado(List<int[]> viajesArticulos) {
-		int[] viajeMenor = viajesArticulos.get(0);
-		int sumatoriaAnterior = -1;
-		for (int[] pesoArticulos : viajesArticulos) {
-			int sumatorioPeso = 0;
-			for (int peso : pesoArticulos) {
-				sumatorioPeso += peso;
-			}
-			if (-1 != sumatoriaAnterior) {
-				if (sumatorioPeso < sumatoriaAnterior) {
-					viajeMenor = pesoArticulos;
-				}
-			}
-
-		}
-		return viajeMenor;
-	}
-
-	/**
-	 * Se obtiene un arreglo de tipo int con los pesos de los articulos a
-	 * trastiar.
-	 * 
-	 * @param articulosATrastiar
-	 * @return
-	 */
-	private List<Integer> getCollectionDePesosDeLosArticulosDelDia(ArticuloATrastiar[] articulosATrastear) {
-		List<Integer> listaArticulosATrastear = null;
-		if (null != articulosATrastear) {
-			listaArticulosATrastear = new ArrayList<>(articulosATrastear.length);
-			for (ArticuloATrastiar articuloATrastear : articulosATrastear) {
-				listaArticulosATrastear.add(articuloATrastear.getPeso());
-			}
-			Collections.sort(listaArticulosATrastear, Collections.reverseOrder());
-		}
-
-		return listaArticulosATrastear;
-	}
+	
 
 }
