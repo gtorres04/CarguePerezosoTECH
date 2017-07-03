@@ -39,6 +39,18 @@ public class CargaPerezosaController {
 	@Autowired
 	@Qualifier("miServletFileUpload")
 	private ServletFileUpload servletFileUpload;
+	
+	/**
+	 * Se inicia la aplicacion y se consulta si existe historial.
+	 * @param model
+	 * @param request
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping(value = "/")
+	public String inicio(Model model) {
+		model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
+		return "index";
+	}
 
 	/**
 	 * Descargar el archivo output.
@@ -99,13 +111,13 @@ public class CargaPerezosaController {
 				}
 				iCargaPerezosaService.procesarEntrada(trazaIntentoDto);
 				model.addAttribute("trazaIntento", trazaIntentoDto);
-				model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
 			} catch (CargaPerezosaException e) {
 				model.addAttribute("error", e.getMessage());
 			}
 		} catch (FileUploadException e1) {
 			model.addAttribute("error", e1.getMessage());
 		}
+		model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
 		return view;
 	}
 
