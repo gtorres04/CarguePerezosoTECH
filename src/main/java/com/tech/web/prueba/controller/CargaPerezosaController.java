@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -14,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.tech.web.prueba.dto.ArchivoDto;
 import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
@@ -26,12 +27,11 @@ import com.tech.web.prueba.support.ConstantesMappingURL;
 
 @Controller
 public class CargaPerezosaController {
-	
+
 	/**
 	 * instancia logger
 	 */
 	private static final AdmonLogger LOGGER = AdmonLogger.getInstance(Logger.getLogger(CargaPerezosaController.class));
-
 
 	@Autowired
 	ICargaPerezosaService iCargaPerezosaService;
@@ -39,6 +39,31 @@ public class CargaPerezosaController {
 	@Autowired
 	@Qualifier("miServletFileUpload")
 	private ServletFileUpload servletFileUpload;
+
+	/**
+	 * Descargar el archivo output.
+	 * 
+	 * @param id
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING
+			+ "{nombreArchivo}", method = RequestMethod.GET)
+	public void descargarArchivo(@PathVariable("nombreArchivo") String nombre, HttpServletRequest request,
+			HttpServletResponse response) {
+		String nombreArchivo = nombre;
+		ArchivoDto archivoDto = iCargaPerezosaService.getArchivoDtoByNombreArchivoTemporal(nombreArchivo);
+		byte[] archivo = archivoDto.getArchivo();
+		String mimeType = archivoDto.getMimeType();
+		String extensionArchivo = archivoDto.getExtension();
+		try {
+			iCargaPerezosaService.descargaArchivoEnCliente(archivo, mimeType, request, response, nombreArchivo,
+					extensionArchivo);
+		} catch (CargaPerezosaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Se recibe el archivo INPUT para procesar.

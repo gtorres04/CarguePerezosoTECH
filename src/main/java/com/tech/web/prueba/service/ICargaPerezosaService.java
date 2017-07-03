@@ -5,6 +5,11 @@ package com.tech.web.prueba.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.tech.web.prueba.dto.ArchivoDto;
 import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 
@@ -13,7 +18,7 @@ import com.tech.web.prueba.exception.CargaPerezosaException;
  *
  */
 public interface ICargaPerezosaService {
-	
+
 	public static List<TrazaIntentoDto> historialTrazaIntentos = new ArrayList<>();
 
 	/**
@@ -24,4 +29,16 @@ public interface ICargaPerezosaService {
 	 * @throws CargaPerezosaException
 	 */
 	void procesarEntrada(TrazaIntentoDto trazaIntentoDto) throws CargaPerezosaException;
+
+	void descargaArchivoEnCliente(byte[] archivo, String mimeType, HttpServletRequest request,
+			HttpServletResponse response, String nombreArchivo, String extensionArchivo) throws CargaPerezosaException;
+
+	/**
+	 * Se obtiene una instancia de ArchivoDto a partir del nombre del Archivo
+	 * temporal.
+	 * 
+	 * @param nombreArchivoTemporal
+	 * @return
+	 */
+	ArchivoDto getArchivoDtoByNombreArchivoTemporal(String nombreArchivoTemporal);
 }

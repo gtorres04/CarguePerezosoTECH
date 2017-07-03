@@ -39,12 +39,53 @@
 			</form>
 		</div>
 	</nav>
-	<h1>${trazaIntento.cedula}</h1>
-	<select>
-	<c:forEach items="${historialTrazaIntento}" var="traza">
-		<option value="${traza.cedula}">${traza.cedula}</option>
-	</c:forEach>
-	</select>
+
+	<div class="panel-respuesta panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">Resultado de procesamiento</h3>
+		</div>
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-1"><b>Cedula</b></div>
+				<div class="col-md-1">${trazaIntento.cedula}</div>
+				<div class="col-md-1"><b>Fecha</b></div>
+				<div class="col-md-3">${trazaIntento.fechaEjecucion}</div>
+				<div class="col-md-1"><b>Entrada</b></div>
+				<div class="col-md-2">
+					<a href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+				</div>
+				<div class="col-md-1"><b>Salida</b></div>
+				<div class="col-md-2">
+					<a href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel-historial panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Historial de Cargue Perezoso</h3>
+		</div>
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-1"><b>CEDULA</b></div>
+				<div class="col-md-3"><b>FECHA</b></div>
+				<div class="col-md-2"><b>ENTRADA</b></div>
+				<div class="col-md-2"><b>SALIDA</b></div>
+			</div>
+			<c:forEach items="${historialTrazaIntento}" var="trazaIntento">
+				<div class="row">
+					<div class="col-md-1">${trazaIntento.cedula}</div>
+					<div class="col-md-3">${trazaIntento.fechaEjecucion}</div>
+					<div class="col-md-2">
+						<a href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+					</div>
+					<div class="col-md-2">
+						<a href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+					</div>
+				</div>
+			</c:forEach>
+		</div>
+	</div>
 	<script src="<c:url value="/frameworks-js/jquery.min.js" />"></script>
 	<script src="<c:url value="/frameworks-js/bootstrap.min.js" />"></script>
 	<link href="<c:url value="/frameworks-css/bootstrap.min.css" />"

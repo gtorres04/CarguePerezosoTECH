@@ -19,6 +19,7 @@
        </bean>
        <mvc:resources mapping="/frameworks-js/**" location="/WEB-INF/assets/js/"  cache-period="31556926"/>
        <mvc:resources mapping="/frameworks-css/**" location="/WEB-INF/assets/css/"  cache-period="31556926"/>
+       <mvc:resources mapping="/fonts/**" location="/WEB-INF/assets/fonts/"  cache-period="31556926"/>
        <bean id="miDiskFileItemFactory" class="org.apache.commons.fileupload.disk.DiskFileItemFactory"/>
 	    <bean name="miServletFileUpload" class="org.apache.commons.fileupload.servlet.ServletFileUpload">
 	        <constructor-arg index="0">

@@ -11,10 +11,15 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
@@ -44,7 +49,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		separadorDeArchivos = properties.getProperty("file.separator");
 		rutaTemporal = ruta;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,6 +60,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		try {
 			String nombreTempArchivo = guardarArchivoFisicamente(trazaIntentoDto.getArchivoInput().getArchivo(),
 					trazaIntentoDto.getArchivoInput().getExtension());
+			trazaIntentoDto.getArchivoInput().setNombreTemporal(nombreTempArchivo.split("\\.")[0]);
 			DiaDeTrabajo[] itinerarioDeTrabajo = iItinerarioDeTrabajoWilsonNegocio
 					.organizarItinerario(this.rutaTemporal + separadorDeArchivos + nombreTempArchivo);
 			String nombreTempOutput = nombreTempArchivo.replace(Constantes.PREFIJO_ARCHIVO_INPUT,
@@ -64,6 +70,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 				int numeroMaxViajes = iItinerarioDeTrabajoWilsonNegocio.maximoNumeroDeViajesEnElDia(diaDeTrabajo);
 				String texto = "Case #" + ordenDiaDeTrabajo + ": " + numeroMaxViajes;
 				escribirArchivoFisico(this.rutaTemporal + separadorDeArchivos + nombreTempOutput, texto);
+				ordenDiaDeTrabajo++;
 			}
 			ArchivoDto archivoOutput = new ArchivoDto();
 			archivoOutput.setNombreOriginal(Constantes.PREFIJO_ARCHIVO_OUTPUT);
@@ -77,6 +84,28 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		} catch (IOException e) {
 			throw new CargaPerezosaException(e.getMessage());
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.tech.web.prueba.service.ICargaPerezosaService#
+	 * getArchivoDtoByNombreArchivoTemporal(java.lang.String)
+	 */
+	@Override
+	public ArchivoDto getArchivoDtoByNombreArchivoTemporal(String nombreArchivoTemporal) {
+		ArchivoDto archivoDto = null;
+		for (TrazaIntentoDto trazaIntentoDto : historialTrazaIntentos) {
+			if (nombreArchivoTemporal.equals(trazaIntentoDto.getArchivoInput().getNombreTemporal())) {
+				archivoDto = trazaIntentoDto.getArchivoInput();
+				break;
+			}
+			if (nombreArchivoTemporal.equals(trazaIntentoDto.getArchivoOutput().getNombreTemporal())) {
+				archivoDto = trazaIntentoDto.getArchivoOutput();
+				break;
+			}
+		}
+		return archivoDto;
 	}
 
 	/**
@@ -159,4 +188,41 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		return cadenaArchivo.toString();
 	}
 
+	/**
+	 * Descargar el archivo en cliente.
+	 * 
+	 * @param archivo
+	 * @param mimeType
+	 * @param request
+	 * @param response
+	 * @param nombreArchivo
+	 * @param extensionArchivo
+	 * @throws CargaPerezosaException
+	 */
+	@Override
+	public void descargaArchivoEnCliente(byte[] archivo, String mimeType, HttpServletRequest request,
+			HttpServletResponse response, String nombreArchivo, String extensionArchivo) throws CargaPerezosaException {
+		try {
+			byte[] archivoADescargar = archivo;
+
+			response.setContentType(mimeType);
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", nombreArchivo + "." + extensionArchivo);
+			response.setHeader(headerKey, headerValue);
+
+			OutputStream outStream = response.getOutputStream();
+			outStream.write(archivoADescargar);
+			outStream.close();
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			try {
+				response.getWriter().print("IO Error: " + ex.getMessage());
+			} catch (IOException e) {
+				throw new CargaPerezosaException(e.getMessage());
+			}
+		} catch (Exception e) {
+			throw new CargaPerezosaException(e.getMessage());
+		}
+	}
 }
