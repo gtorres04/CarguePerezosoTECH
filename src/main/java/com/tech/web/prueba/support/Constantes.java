@@ -1,7 +1,11 @@
 package com.tech.web.prueba.support;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import com.tech.web.prueba.dto.TrazaIntentoDto;
 
 public class Constantes {
 	
@@ -19,6 +23,8 @@ public class Constantes {
 	public static final String PREFIJO_ARCHIVO_OUTPUT = "lazy_loading_output";
 	public static final String RUTA_TEMPORAL = properties.getProperty("user.home");
 	public static final String SEPARADOR_ARCHIVOS = properties.getProperty("file.separator");
+	
+	public static List<TrazaIntentoDto> historialTrazaIntentos = new ArrayList<>();
 
 	public enum Mensajes {
 		

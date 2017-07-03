@@ -21,7 +21,7 @@ import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.service.ICargaPerezosaService;
 import com.tech.web.prueba.support.AdmonLogger;
-import com.tech.web.prueba.support.Constantes.Mensajes;
+import com.tech.web.prueba.support.Constantes;
 import com.tech.web.prueba.support.ConstantesMappingURL;
 import com.tech.web.prueba.support.Utilidades;
 
@@ -45,10 +45,9 @@ public class CargaPerezosaController {
 	 * @param model
 	 * @param request
 	 */
-	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/")
 	public String inicio(Model model) {
-		model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
+		model.addAttribute("historialTrazaIntento", Constantes.historialTrazaIntentos);
 		return "index";
 	}
 
@@ -69,7 +68,7 @@ public class CargaPerezosaController {
 		String mimeType = archivoDto.getMimeType();
 		String extensionArchivo = archivoDto.getExtension();
 		try {
-			Utilidades.descargaArchivoEnCliente(archivo, mimeType, request, response, nombreArchivo,
+			Utilidades.descargaArchivoEnCliente(archivo, mimeType, response, nombreArchivo,
 					extensionArchivo);
 		} catch (CargaPerezosaException e) {
 			LOGGER.error(e.getMessage());
@@ -83,11 +82,8 @@ public class CargaPerezosaController {
 	 * @param request
 	 * @return
 	 */
-	@SuppressWarnings("static-access")
 	@RequestMapping(value = ConstantesMappingURL.CARGAR_ARCHIVO_URL_MAPPING, method = RequestMethod.POST)
 	public String cargarInputCargaPerezosa(Model model, HttpServletRequest request) {
-		LOGGER.debug("Hola");
-		System.out.println(Mensajes.ERROR_DESCONOCIDO.getMensaje());
 		String view = ConstantesMappingURL.PAGINA_PRINCIPAL_PAG;
 		TrazaIntentoDto trazaIntentoDto = new TrazaIntentoDto();
 		trazaIntentoDto.setFechaEjecucion(new Date());
@@ -97,7 +93,6 @@ public class CargaPerezosaController {
 			fileItemsList = servletFileUpload.parseRequest(request);
 
 			Iterator<?> it = fileItemsList.iterator();
-			try {
 				while (it.hasNext()) {
 					FileItem item = (FileItem) it.next();
 					if (item.isFormField()) {
@@ -111,13 +106,11 @@ public class CargaPerezosaController {
 				}
 				iCargaPerezosaService.procesarEntrada(trazaIntentoDto);
 				model.addAttribute("trazaIntento", trazaIntentoDto);
-			} catch (CargaPerezosaException e) {
-				model.addAttribute("error", e.getMessage());
-			}
-		} catch (FileUploadException e1) {
-			model.addAttribute("error", e1.getMessage());
+			
+		} catch (CargaPerezosaException | FileUploadException e) {
+			model.addAttribute("error", e.getMessage());
 		}
-		model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
+		model.addAttribute("historialTrazaIntento", Constantes.historialTrazaIntentos);
 		return view;
 	}
 

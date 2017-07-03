@@ -3,8 +3,6 @@
  */
 package com.tech.web.prueba.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.tech.web.prueba.dto.ArchivoDto;
 import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
@@ -14,8 +12,6 @@ import com.tech.web.prueba.exception.CargaPerezosaException;
  *
  */
 public interface ICargaPerezosaService {
-
-	public static List<TrazaIntentoDto> historialTrazaIntentos = new ArrayList<>();
 
 	/**
 	 * Se obtiene el archivo cargado con la cedula y se envia al modelo de

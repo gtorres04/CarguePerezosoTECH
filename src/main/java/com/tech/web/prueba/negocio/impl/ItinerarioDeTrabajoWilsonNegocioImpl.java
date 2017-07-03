@@ -29,7 +29,8 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 	/**
 	 * instancia logger
 	 */
-	private static final AdmonLogger LOGGER = AdmonLogger.getInstance(Logger.getLogger(ItinerarioDeTrabajoWilsonNegocioImpl.class));
+	private static final AdmonLogger LOGGER = AdmonLogger
+			.getInstance(Logger.getLogger(ItinerarioDeTrabajoWilsonNegocioImpl.class));
 
 	private DiaDeTrabajo[] itinerarioDeTrabajo;
 	/**
@@ -64,6 +65,7 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		ordenDelArticuloEnGestion = 0;
 		return this.itinerarioDeTrabajo;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -72,7 +74,8 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 	 */
 	@Override
 	public int maximoNumeroDeViajesEnElDia(DiaDeTrabajo diaDeTrabajo) {
-		List<Integer> pesosArticulos = Utilidades.getCollectionDePesosDeLosArticulosDelDia(diaDeTrabajo.getArticulosATrastiar());
+		List<Integer> pesosArticulos = Utilidades
+				.getCollectionDePesosDeLosArticulosDelDia(diaDeTrabajo.getArticulosATrastiar());
 		List<int[]> viajesArticulos = new ArrayList<>();
 		while (!pesosArticulos.isEmpty()) {
 			int peso = pesosArticulos.get(0);
@@ -89,7 +92,7 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 				}
 				viajesArticulos.remove(viajeMenor);
 				viajesArticulos.add(viajeNuevoAgregandoUltimosArticulos);
-				pesosArticulos.removeAll(pesosArticulos);
+				pesosArticulos.clear();
 				continue;
 			}
 			pesosArticulos.remove(0);
@@ -109,7 +112,7 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		}
 		return viajesArticulos.size();
 	}
-	
+
 	/**
 	 * Recorre el archivo y se toman los datos del archivo Input.
 	 * 
@@ -118,7 +121,7 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 	 */
 	private void rastrearArchivoInput(String rutaArchivo) throws CargaPerezosaException {
 		String cadena;
-		FileReader f;
+		FileReader f = null;
 		int numeroLinea = 0;
 		try {
 			f = new FileReader(rutaArchivo);
@@ -146,6 +149,7 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 
 			}
 			b.close();
+			f.close();
 		} catch (IOException e) {
 			LOGGER.warn(e);
 			throw new CargaPerezosaException(
@@ -235,7 +239,5 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 			itinerarioDeTrabajo[i] = new DiaDeTrabajo();
 		}
 	}
-
-	
 
 }

@@ -49,10 +49,8 @@ public class Utilidades {
 			for (int peso : pesoArticulos) {
 				sumatorioPeso += peso;
 			}
-			if (-1 != sumatoriaAnterior) {
-				if (sumatorioPeso < sumatoriaAnterior) {
-					viajeMenor = pesoArticulos;
-				}
+			if (-1 != sumatoriaAnterior && sumatorioPeso < sumatoriaAnterior) {
+				viajeMenor = pesoArticulos;
 			}
 
 		}
@@ -254,7 +252,7 @@ public class Utilidades {
 	 * @param extensionArchivo
 	 * @throws CargaPerezosaException
 	 */
-	public static void descargaArchivoEnCliente(byte[] archivo, String mimeType, HttpServletRequest request,
+	public static void descargaArchivoEnCliente(byte[] archivo, String mimeType,
 			HttpServletResponse response, String nombreArchivo, String extensionArchivo) throws CargaPerezosaException {
 		try {
 			byte[] archivoADescargar = archivo;

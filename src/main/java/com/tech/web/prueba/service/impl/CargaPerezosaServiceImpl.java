@@ -44,7 +44,6 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	 * 
 	 * @see com.tech.web.prueba.service.ICargaPerezosaService#procesarEntrada()
 	 */
-	@SuppressWarnings("static-access")
 	public void procesarEntrada(TrazaIntentoDto trazaIntentoDto) throws CargaPerezosaException {
 		LOGGER.debug("procesando archivo");
 		String nombreTempArchivo = Utilidades.guardarArchivoFisicamente(trazaIntentoDto.getArchivoInput().getArchivo(),
@@ -69,7 +68,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		archivoOutput.setNombreTemporal(nombreArchivo[0]);
 		archivoOutput.setExtension(nombreArchivo[1]);
 		trazaIntentoDto.setArchivoOutput(archivoOutput);
-		this.historialTrazaIntentos.add(trazaIntentoDto);
+		Constantes.historialTrazaIntentos.add(trazaIntentoDto);
 
 	}
 
@@ -82,7 +81,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	@Override
 	public ArchivoDto getArchivoDtoByNombreArchivoTemporal(String nombreArchivoTemporal) {
 		ArchivoDto archivoDto = null;
-		for (TrazaIntentoDto trazaIntentoDto : historialTrazaIntentos) {
+		for (TrazaIntentoDto trazaIntentoDto : Constantes.historialTrazaIntentos) {
 			if (nombreArchivoTemporal.equals(trazaIntentoDto.getArchivoInput().getNombreTemporal())) {
 				archivoDto = trazaIntentoDto.getArchivoInput();
 				break;
