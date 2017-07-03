@@ -5,21 +5,17 @@
 	<appender name="consola" class="org.apache.log4j.ConsoleAppender">
 		<param name="target" value="System.out" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH\:mm\:ss}] %-5p %c{1}" />
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %c{1}:%L - %m%n" />
 		</layout>
 	</appender>
 	
 	<!-- Application Loggers -->
 	<logger name="com.tech">
-		<level value="TRACE" />
-		<appender-ref ref="consola" />
-	</logger>
-	<logger name="com.tech">
 		<level value="DEBUG" />
 		<appender-ref ref="consola" />
 	</logger>
 	<logger name="org">
-		<level value="OFF" />
+		<level value="WARN" />
 		<appender-ref ref="consola" />
 	</logger>
 	<!-- 3rdparty Loggers -->
