@@ -17,9 +17,9 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
-import com.tech.web.prueba.dominio.TrazaIntento;
+import com.tech.web.prueba.dto.ArchivoDto;
+import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
 import com.tech.web.prueba.service.ICargaPerezosaService;
@@ -44,13 +44,14 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 		separadorDeArchivos = properties.getProperty("file.separator");
 		rutaTemporal = ruta;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.tech.web.prueba.service.ICargaPerezosaService#procesarEntrada()
 	 */
-	public void procesarEntrada(TrazaIntento trazaIntentoDto) throws CargaPerezosaException {
+	@SuppressWarnings("static-access")
+	public void procesarEntrada(TrazaIntentoDto trazaIntentoDto) throws CargaPerezosaException {
 		try {
 			String nombreTempArchivo = guardarArchivoFisicamente(trazaIntentoDto.getArchivoInput().getArchivo(),
 					trazaIntentoDto.getArchivoInput().getExtension());
@@ -58,9 +59,21 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 					.organizarItinerario(this.rutaTemporal + separadorDeArchivos + nombreTempArchivo);
 			String nombreTempOutput = nombreTempArchivo.replace(Constantes.PREFIJO_ARCHIVO_INPUT,
 					Constantes.PREFIJO_ARCHIVO_OUTPUT);
+			int ordenDiaDeTrabajo = 1;
 			for (DiaDeTrabajo diaDeTrabajo : itinerarioDeTrabajo) {
-				int numeroMaxViajes=iItinerarioDeTrabajoWilsonNegocio.maximoNumeroDeViajesEnElDia(diaDeTrabajo);
+				int numeroMaxViajes = iItinerarioDeTrabajoWilsonNegocio.maximoNumeroDeViajesEnElDia(diaDeTrabajo);
+				String texto = "Case #" + ordenDiaDeTrabajo + ": " + numeroMaxViajes;
+				escribirArchivoFisico(this.rutaTemporal + separadorDeArchivos + nombreTempOutput, texto);
 			}
+			ArchivoDto archivoOutput = new ArchivoDto();
+			archivoOutput.setNombreOriginal(Constantes.PREFIJO_ARCHIVO_OUTPUT);
+			archivoOutput.setArchivo(this.obtenerArchivoFisicamente(nombreTempOutput));
+			archivoOutput.setMimeType(trazaIntentoDto.getArchivoInput().getMimeType());
+			String[] nombreArchivo = nombreTempOutput.split("\\.");
+			archivoOutput.setNombreTemporal(nombreArchivo[0]);
+			archivoOutput.setExtension(nombreArchivo[1]);
+			trazaIntentoDto.setArchivoOutput(archivoOutput);
+			this.historialTrazaIntentos.add(trazaIntentoDto);
 		} catch (IOException e) {
 			throw new CargaPerezosaException(e.getMessage());
 		}
@@ -104,7 +117,7 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	 * @param texto
 	 * @throws CargaPerezosaException
 	 */
-	public void escribirArchivoFisico(String rutaArchivo, String texto) throws CargaPerezosaException {
+	private void escribirArchivoFisico(String rutaArchivo, String texto) throws CargaPerezosaException {
 		File archivo = new File(rutaArchivo);
 		BufferedWriter bw;
 		try {

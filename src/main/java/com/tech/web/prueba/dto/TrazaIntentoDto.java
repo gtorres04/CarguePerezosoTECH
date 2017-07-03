@@ -1,19 +1,26 @@
 /**
  * 
  */
-package com.tech.web.prueba.dominio;
+package com.tech.web.prueba.dto;
 
+import java.io.Serializable;
 import java.util.Date;
+
 
 /**
  * @author gerlinorlandotorressaavedra
  *
  */
-public class TrazaIntento {
+public class TrazaIntentoDto implements Serializable{
 	
-	private Archivo archivoInput;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1657951251538093116L;
+
+	private ArchivoDto archivoInput;
 	
-	private Archivo archivoOutput;
+	private ArchivoDto archivoOutput;
 
 	private String cedula;
 	
@@ -37,28 +44,28 @@ public class TrazaIntento {
 	/**
 	 * @return the archivoInput
 	 */
-	public Archivo getArchivoInput() {
+	public ArchivoDto getArchivoInput() {
 		return archivoInput;
 	}
 
 	/**
 	 * @param archivoInput the archivoInput to set
 	 */
-	public void setArchivoInput(Archivo archivoInput) {
+	public void setArchivoInput(ArchivoDto archivoInput) {
 		this.archivoInput = archivoInput;
 	}
 
 	/**
 	 * @return the archivoOutput
 	 */
-	public Archivo getArchivoOutput() {
+	public ArchivoDto getArchivoOutput() {
 		return archivoOutput;
 	}
 
 	/**
 	 * @param archivoOutput the archivoOutput to set
 	 */
-	public void setArchivoOutput(Archivo archivoOutput) {
+	public void setArchivoOutput(ArchivoDto archivoOutput) {
 		this.archivoOutput = archivoOutput;
 	}
 

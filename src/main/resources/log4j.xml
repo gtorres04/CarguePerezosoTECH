@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="consola" class="org.apache.log4j.ConsoleAppender">
+		<param name="target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH\:mm\:ss}] %-5p %c{1}" />
+		</layout>
+	</appender>
+	
+	<!-- Application Loggers -->
+	<logger name="com.tech">
+		<level value="TRACE" />
+		<appender-ref ref="consola" />
+	</logger>
+	<logger name="com.tech">
+		<level value="DEBUG" />
+		<appender-ref ref="consola" />
+	</logger>
+	<logger name="org">
+		<level value="OFF" />
+		<appender-ref ref="consola" />
+	</logger>
+	<!-- 3rdparty Loggers -->
+<!-- 	<logger name="org" additivity="false"> -->
+<!-- 		<level value="OFF" /> -->
+<!-- 		<appender-ref ref="consola" /> -->
+<!-- 	</logger> -->
+<!-- 	<logger name="com.mchange" additivity="false"> -->
+<!-- 		<level value="OFF" /> -->
+<!-- 		<appender-ref ref="consola" /> -->
+<!-- 	</logger> -->
+
+<!-- 	<root> -->
+<!-- 		<priority value="trace" /> -->
+<!-- 		<appender-ref ref="consola" /> -->
+<!-- 	</root> -->
+	<!-- <appender name="fileAdmonCtaBancarias" class="org.apache.log4j.RollingFileAppender"> 
+		<param name="File" value="/datos/proteccion/internetTransacciones/proteccion/admoncuentasbancarias/current/logs/admoncuentasbancarias.log" 
+		/> <param name="Append" value="true" /> <param name="MaxFileSize" value="1MB" 
+		/> <param name="MaxBackupIndex" value="10" /> <layout class="org.apache.log4j.PatternLayout"> 
+		<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH\:mm\:ss}] %-5p %c{1} 
+		- %m%n" /> </layout> </appender> -->
+
+</log4j:configuration>

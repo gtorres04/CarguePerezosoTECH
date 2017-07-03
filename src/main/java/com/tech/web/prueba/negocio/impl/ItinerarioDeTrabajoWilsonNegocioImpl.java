@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import com.tech.web.prueba.dominio.ArticuloATrastiar;
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
-import com.tech.web.prueba.support.Utilidades;
 
 /**
  * @author gerlinorlandotorressaavedra
@@ -53,6 +51,10 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 	@Override
 	public DiaDeTrabajo[] organizarItinerario(String rutaArchivo) throws CargaPerezosaException {
 		rastrearArchivoInput(rutaArchivo);
+		agregarCantidadArticulosDeldia = false;
+		agregarPesoDelArticulo = false;
+		ordenDelDiaEnGestion = 0;
+		ordenDelArticuloEnGestion = 0;
 		return this.itinerarioDeTrabajo;
 	}
 
@@ -193,10 +195,10 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		while (!pesosArticulos.isEmpty()) {
 			int peso = pesosArticulos.get(0);
 			int numeroDeProductosDebajoDeEl = (int) (Math.ceil(50.0 / peso) - 1);
-			if ((numeroDeProductosDebajoDeEl+1) > pesosArticulos.size()) {
+			if ((numeroDeProductosDebajoDeEl + 1) > pesosArticulos.size()) {
 				int[] viajeMenor = getViajeMenosPesado(viajesArticulos);
 				int[] viajeNuevoAgregandoUltimosArticulos = new int[viajeMenor.length + pesosArticulos.size()];
-				int i=0;
+				int i = 0;
 				for (i = 0; i < viajeMenor.length; i++) {
 					viajeNuevoAgregandoUltimosArticulos[i] = viajeMenor[i];
 				}

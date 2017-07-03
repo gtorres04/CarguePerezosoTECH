@@ -1,13 +1,19 @@
 /**
  * 
  */
-package com.tech.web.prueba.dominio;
+package com.tech.web.prueba.dto;
+
+import java.io.Serializable;
 
 /**
  * @author gerlinorlandotorressaavedra
  *
  */
-public class Archivo {
+public class ArchivoDto implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2492939328891583009L;
 	private String nombreOriginal;
 	private String nombreTemporal;
 	private String extension;

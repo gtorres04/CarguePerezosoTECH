@@ -1,10 +1,9 @@
 <%@include file="includes/etiquetas-imports.jsp"%>
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>Cargue Perezoso</title>
-<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <%@include file="includes/contexto.jsp"%>
 </head>
@@ -26,7 +25,7 @@
        otro elemento que se pueda ocultar al minimizar la barra -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<form
-				action="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.CARGAR_ARCHIVO%>"
+				action="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.CARGAR_ARCHIVO_URL_MAPPING%>"
 				class="navbar-form navbar-left" method="post"
 				enctype="multipart/form-data">
 				<div class="form-group">
@@ -40,7 +39,12 @@
 			</form>
 		</div>
 	</nav>
-
+	<h1>${trazaIntento.cedula}</h1>
+	<select>
+	<c:forEach items="${historialTrazaIntento}" var="traza">
+		<option value="${traza.cedula}">${traza.cedula}</option>
+	</c:forEach>
+	</select>
 	<script src="<c:url value="/frameworks-js/jquery.min.js" />"></script>
 	<script src="<c:url value="/frameworks-js/bootstrap.min.js" />"></script>
 	<link href="<c:url value="/frameworks-css/bootstrap.min.css" />"

@@ -19,11 +19,6 @@
        </bean>
        <mvc:resources mapping="/frameworks-js/**" location="/WEB-INF/assets/js/"  cache-period="31556926"/>
        <mvc:resources mapping="/frameworks-css/**" location="/WEB-INF/assets/css/"  cache-period="31556926"/>
-       <!-- 
-       <mvc:resources mapping="/frameworks-fonts/**" location="/resources/fonts/"  cache-period="31556926"/>
-       <mvc:resources mapping="/modulo-ng-proveedor/**" location="/resources/js/modulos/admon-proveedor/"  cache-period="31556926"/>
-       <mvc:resources mapping="/modulo-css-proveedor/**" location="/resources/css/modulos/admon-proveedor/"  cache-period="31556926"/>
-       -->
        <bean id="miDiskFileItemFactory" class="org.apache.commons.fileupload.disk.DiskFileItemFactory"/>
 	    <bean name="miServletFileUpload" class="org.apache.commons.fileupload.servlet.ServletFileUpload">
 	        <constructor-arg index="0">
