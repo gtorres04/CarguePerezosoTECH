@@ -23,6 +23,8 @@ public class Constantes {
 	public enum Mensajes {
 		
 		ERROR_DESCONOCIDO(bundle.getString("msn.error_desconocido")),
+		ERROR_EXTENSION_ARCHIVO(bundle.getString("msn.error_extension_archivo")),
+		
 		ERROR_ARCHIVO_NO_ENCONTRADO(bundle.getString("msn.error_archivo_no_econtrado")),
 		ERROR_ARCHIVO_NO_CREADO(bundle.getString("msn.error_archivo_no_creado")),
 		ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA(bundle.getString("msn.error_archivo_no_permisos_escritura")),

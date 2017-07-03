@@ -2,6 +2,8 @@ package com.tech.web.prueba.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -81,36 +83,35 @@ public class CargaPerezosaController {
 		String view = ConstantesMappingURL.PAGINA_PRINCIPAL_PAG;
 		TrazaIntentoDto trazaIntentoDto = new TrazaIntentoDto();
 		trazaIntentoDto.setFechaEjecucion(new Date());
+
+		List<?> fileItemsList;
 		try {
-			List<?> fileItemsList = servletFileUpload.parseRequest(request);
+			fileItemsList = servletFileUpload.parseRequest(request);
+
 			Iterator<?> it = fileItemsList.iterator();
-			while (it.hasNext()) {
-				FileItem item = (FileItem) it.next();
-				if (item.isFormField()) {
-					String fieldvalue = item.getString();
-					trazaIntentoDto.setCedula(fieldvalue);
-				} else {
-					ArchivoDto archivo;
-					try {
+			try {
+				while (it.hasNext()) {
+					FileItem item = (FileItem) it.next();
+					if (item.isFormField()) {
+						String fieldvalue = item.getString();
+						trazaIntentoDto.setCedula(fieldvalue);
+					} else {
+						ArchivoDto archivo;
+
 						archivo = getArchivoByFileItem(item);
 						trazaIntentoDto.setArchivoInput(archivo);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+
 					}
 				}
-			}
-			try {
 				iCargaPerezosaService.procesarEntrada(trazaIntentoDto);
 				model.addAttribute("trazaIntento", trazaIntentoDto);
 				model.addAttribute("historialTrazaIntento", iCargaPerezosaService.historialTrazaIntentos);
 			} catch (CargaPerezosaException e) {
 				model.addAttribute("error", e.getMessage());
 			}
-		} catch (FileUploadException e) {
-			model.addAttribute("error", e.getMessage());
+		} catch (FileUploadException e1) {
+			model.addAttribute("error", e1.getMessage());
 		}
-
 		return view;
 	}
 
@@ -120,30 +121,50 @@ public class CargaPerezosaController {
 	 * 
 	 * @param fileItem
 	 * @return una instancia de tipo Archivo.
+	 * @throws CargaPerezosaException
 	 * @throws Exception
 	 */
-	private ArchivoDto getArchivoByFileItem(FileItem fileItem) throws Exception {
+	private ArchivoDto getArchivoByFileItem(FileItem fileItem) throws CargaPerezosaException {
 		ArchivoDto archivo = null;
 		if (!fileItem.isFormField()) {
 			archivo = new ArchivoDto();
 			String nombre = fileItem.getName();
 			String[] nombreArchivo = nombre.split("\\.");
+			if(!"txt".equals(nombreArchivo[1])){
+				throw new CargaPerezosaException(Mensajes.ERROR_EXTENSION_ARCHIVO.getMensaje());
+			}
 			archivo.setNombreOriginal(nombreArchivo[0]);
 			archivo.setExtension(nombreArchivo[1]);
 			archivo.setMimeType(fileItem.getContentType());
 			File archivoADisco = new File(nombre);
 			archivoADisco = new File(archivoADisco.getName());
-			fileItem.write(archivoADisco);
+			try {
+				fileItem.write(archivoADisco);
+			} catch (Exception e) {
+				throw new CargaPerezosaException(String.format(
+						Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA.getMensaje(), archivoADisco.getAbsolutePath()));
+			}
 			File inputFile = new File(archivoADisco.getAbsolutePath());
-			FileInputStream inputStream = new FileInputStream(inputFile);
+			FileInputStream inputStream;
+			try {
+				inputStream = new FileInputStream(inputFile);
+			} catch (FileNotFoundException e) {
+				throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(),
+						archivoADisco.getAbsolutePath()));
+			}
 			byte[] fileBytes = new byte[(int) inputFile.length()];
-			inputStream.read(fileBytes);
-			inputStream.close();
+			try {
+				inputStream.read(fileBytes);
+				inputStream.close();
+			} catch (IOException e) {
+				throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_LECTURA.getMensaje(),
+						archivoADisco.getAbsolutePath()));
+			}
 			archivo.setArchivo(fileBytes);
 			if (inputFile.delete())
-				System.out.println("El fichero ha sido borrado satisfactoriamente");
+				LOGGER.debug("El fichero ha sido borrado satisfactoriamente");
 			else
-				System.out.println("El fichero no puede ser borrado");
+				LOGGER.debug("El fichero no puede ser borrado");
 		}
 		return archivo;
 	}

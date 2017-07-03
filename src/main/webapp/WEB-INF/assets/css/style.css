@@ -7,7 +7,8 @@ input[type=file] {
 }
 .panel-historial, 
 .panel-respuesta,
-.barra-formulario{
+.barra-formulario,
+.alerta{
 	width: 80%;
 	margin: 0 auto;
 	margin-bottom: 10px;

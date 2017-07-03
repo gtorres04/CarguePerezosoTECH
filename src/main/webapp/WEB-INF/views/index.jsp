@@ -32,10 +32,11 @@
 				<div class="form-group">
 					<input type="number" class="form-control"
 						placeholder="<fmt:message key="placeholder.input.cedula" bundle="${lang}" />"
-						id="cedula" name="cedula">
+						id="cedula" name="cedula" required="required">
 				</div>
 				<div class="form-group">
-					<input class="form-control" type="file" name="archivo" id="archivo">
+					<input class="form-control" type="file" name="archivo" id="archivo"
+						required="required" accept=".txt">
 				</div>
 				<button type="submit" class="btn btn-default">
 					<fmt:message key="boton.enviar.input" bundle="${lang}" />
@@ -43,6 +44,16 @@
 			</form>
 		</div>
 	</nav>
+
+	<c:choose>
+		<c:when test="${!empty error}">
+			<div class="alerta alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				${error}
+			</div>
+		</c:when>
+	</c:choose>
+
 	<c:choose>
 		<c:when test="${!empty trazaIntento}">
 			<div class="panel-respuesta panel panel-primary">
@@ -67,8 +78,8 @@
 						<div class="col-md-2">
 							<a
 								href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span
-								class="glyphicon glyphicon-cloud-download"></span>
-							<fmt:message key="label.descarga" bundle="${lang}" /></a>
+								class="glyphicon glyphicon-cloud-download"></span> <fmt:message
+									key="label.descarga" bundle="${lang}" /></a>
 						</div>
 						<div class="col-md-1">
 							<b><fmt:message key="label.salida" bundle="${lang}" /></b>
@@ -76,8 +87,8 @@
 						<div class="col-md-2">
 							<a
 								href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span
-								class="glyphicon glyphicon-cloud-download"></span>
-							<fmt:message key="label.descarga" bundle="${lang}" /></a>
+								class="glyphicon glyphicon-cloud-download"></span> <fmt:message
+									key="label.descarga" bundle="${lang}" /></a>
 						</div>
 					</div>
 				</div>
@@ -114,14 +125,14 @@
 							<div class="col-md-2">
 								<a
 									href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span
-									class="glyphicon glyphicon-cloud-download"></span>
-								<fmt:message key="label.descarga" bundle="${lang}" /></a>
+									class="glyphicon glyphicon-cloud-download"></span> <fmt:message
+										key="label.descarga" bundle="${lang}" /></a>
 							</div>
 							<div class="col-md-2">
 								<a
 									href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span
-									class="glyphicon glyphicon-cloud-download"></span>
-								<fmt:message key="label.descarga" bundle="${lang}" /></a>
+									class="glyphicon glyphicon-cloud-download"></span> <fmt:message
+										key="label.descarga" bundle="${lang}" /></a>
 							</div>
 						</div>
 					</c:forEach>
