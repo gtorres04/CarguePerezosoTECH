@@ -15,20 +15,23 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
 import com.tech.web.prueba.dto.ArchivoDto;
 import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
 import com.tech.web.prueba.service.ICargaPerezosaService;
+import com.tech.web.prueba.support.AdmonLogger;
 import com.tech.web.prueba.support.Constantes;
+import com.tech.web.prueba.support.Constantes.Mensajes;
 
 /**
  * @author gerlinorlandotorressaavedra
@@ -36,6 +39,10 @@ import com.tech.web.prueba.support.Constantes;
  */
 @Service
 public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
+	/**
+	 * instancia logger
+	 */
+	private static final AdmonLogger LOGGER = AdmonLogger.getInstance(Logger.getLogger(CargaPerezosaServiceImpl.class));
 
 	private String rutaTemporal;
 	private String separadorDeArchivos;
@@ -44,10 +51,8 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	IItinerarioDeTrabajoWilsonNegocio iItinerarioDeTrabajoWilsonNegocio;
 
 	public CargaPerezosaServiceImpl() {
-		Properties properties = System.getProperties();
-		String ruta = properties.getProperty("user.home");
-		separadorDeArchivos = properties.getProperty("file.separator");
-		rutaTemporal = ruta;
+		separadorDeArchivos = Constantes.SEPARADOR_ARCHIVOS;
+		rutaTemporal = Constantes.RUTA_TEMPORAL;
 	}
 
 	/*
@@ -57,33 +62,31 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	 */
 	@SuppressWarnings("static-access")
 	public void procesarEntrada(TrazaIntentoDto trazaIntentoDto) throws CargaPerezosaException {
-		try {
-			String nombreTempArchivo = guardarArchivoFisicamente(trazaIntentoDto.getArchivoInput().getArchivo(),
-					trazaIntentoDto.getArchivoInput().getExtension());
-			trazaIntentoDto.getArchivoInput().setNombreTemporal(nombreTempArchivo.split("\\.")[0]);
-			DiaDeTrabajo[] itinerarioDeTrabajo = iItinerarioDeTrabajoWilsonNegocio
-					.organizarItinerario(this.rutaTemporal + separadorDeArchivos + nombreTempArchivo);
-			String nombreTempOutput = nombreTempArchivo.replace(Constantes.PREFIJO_ARCHIVO_INPUT,
-					Constantes.PREFIJO_ARCHIVO_OUTPUT);
-			int ordenDiaDeTrabajo = 1;
-			for (DiaDeTrabajo diaDeTrabajo : itinerarioDeTrabajo) {
-				int numeroMaxViajes = iItinerarioDeTrabajoWilsonNegocio.maximoNumeroDeViajesEnElDia(diaDeTrabajo);
-				String texto = "Case #" + ordenDiaDeTrabajo + ": " + numeroMaxViajes;
-				escribirArchivoFisico(this.rutaTemporal + separadorDeArchivos + nombreTempOutput, texto);
-				ordenDiaDeTrabajo++;
-			}
-			ArchivoDto archivoOutput = new ArchivoDto();
-			archivoOutput.setNombreOriginal(Constantes.PREFIJO_ARCHIVO_OUTPUT);
-			archivoOutput.setArchivo(this.obtenerArchivoFisicamente(nombreTempOutput));
-			archivoOutput.setMimeType(trazaIntentoDto.getArchivoInput().getMimeType());
-			String[] nombreArchivo = nombreTempOutput.split("\\.");
-			archivoOutput.setNombreTemporal(nombreArchivo[0]);
-			archivoOutput.setExtension(nombreArchivo[1]);
-			trazaIntentoDto.setArchivoOutput(archivoOutput);
-			this.historialTrazaIntentos.add(trazaIntentoDto);
-		} catch (IOException e) {
-			throw new CargaPerezosaException(e.getMessage());
+
+		String nombreTempArchivo = guardarArchivoFisicamente(trazaIntentoDto.getArchivoInput().getArchivo(),
+				trazaIntentoDto.getArchivoInput().getExtension());
+		trazaIntentoDto.getArchivoInput().setNombreTemporal(nombreTempArchivo.split("\\.")[0]);
+		DiaDeTrabajo[] itinerarioDeTrabajo = iItinerarioDeTrabajoWilsonNegocio
+				.organizarItinerario(this.rutaTemporal + separadorDeArchivos + nombreTempArchivo);
+		String nombreTempOutput = nombreTempArchivo.replace(Constantes.PREFIJO_ARCHIVO_INPUT,
+				Constantes.PREFIJO_ARCHIVO_OUTPUT);
+		int ordenDiaDeTrabajo = 1;
+		for (DiaDeTrabajo diaDeTrabajo : itinerarioDeTrabajo) {
+			int numeroMaxViajes = iItinerarioDeTrabajoWilsonNegocio.maximoNumeroDeViajesEnElDia(diaDeTrabajo);
+			String texto = "Case #" + ordenDiaDeTrabajo + ": " + numeroMaxViajes;
+			escribirArchivoFisico(this.rutaTemporal + separadorDeArchivos + nombreTempOutput, texto);
+			ordenDiaDeTrabajo++;
 		}
+		ArchivoDto archivoOutput = new ArchivoDto();
+		archivoOutput.setNombreOriginal(Constantes.PREFIJO_ARCHIVO_OUTPUT);
+		archivoOutput.setArchivo(this.obtenerArchivoFisicamente(nombreTempOutput));
+		archivoOutput.setMimeType(trazaIntentoDto.getArchivoInput().getMimeType());
+		String[] nombreArchivo = nombreTempOutput.split("\\.");
+		archivoOutput.setNombreTemporal(nombreArchivo[0]);
+		archivoOutput.setExtension(nombreArchivo[1]);
+		trazaIntentoDto.setArchivoOutput(archivoOutput);
+		this.historialTrazaIntentos.add(trazaIntentoDto);
+
 	}
 
 	/*
@@ -114,14 +117,30 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	 * @param archivo
 	 * @param extension
 	 * @return
+	 * @throws CargaPerezosaException
 	 * @throws IOException
 	 */
-	private String guardarArchivoFisicamente(byte[] archivo, String extension) throws IOException {
+	private String guardarArchivoFisicamente(byte[] archivo, String extension) throws CargaPerezosaException {
 		File carpetaTemporal;
 		carpetaTemporal = new File(rutaTemporal);
-		File temp = File.createTempFile(Constantes.PREFIJO_ARCHIVO_INPUT, "." + extension, carpetaTemporal);
+		File temp = null;
+		try {
+			temp = File.createTempFile(Constantes.PREFIJO_ARCHIVO_INPUT, "." + extension, carpetaTemporal);
+		} catch (IOException e) {
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_NO_CREADO.getMensaje(),
+					Constantes.PREFIJO_ARCHIVO_INPUT, "." + extension, rutaTemporal));
+		}
 		try (FileOutputStream fos = new FileOutputStream(temp)) {
 			fos.write(archivo);
+		} catch (FileNotFoundException e) {
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(),
+					rutaTemporal + separadorDeArchivos + temp.getName()));
+		} catch (IOException e) {
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(String.format(Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA.getMensaje(),
+					rutaTemporal + separadorDeArchivos + temp.getName()));
 		}
 		return temp.getName();
 	}
@@ -131,11 +150,19 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 	 * 
 	 * @param nombreTemporal
 	 * @return
+	 * @throws CargaPerezosaException
 	 * @throws IOException
 	 */
-	private byte[] obtenerArchivoFisicamente(String nombreTemporal) throws IOException {
+	private byte[] obtenerArchivoFisicamente(String nombreTemporal) throws CargaPerezosaException {
 		Path path = Paths.get(rutaTemporal + separadorDeArchivos + nombreTemporal);
-		byte[] data = Files.readAllBytes(path);
+		byte[] data;
+		try {
+			data = Files.readAllBytes(path);
+		} catch (IOException e) {
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(
+					String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(), path.toString()));
+		}
 		return data;
 	}
 
@@ -157,7 +184,9 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 			bw.write(texto);
 			bw.close();
 		} catch (IOException e) {
-			throw new CargaPerezosaException("Problemas de escritura con el archivo temporal: " + rutaArchivo);
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(
+					String.format(Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_ESCRITURA.getMensaje(), rutaArchivo));
 		}
 
 	}
@@ -181,9 +210,13 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 			}
 			b.close();
 		} catch (FileNotFoundException e) {
-			throw new CargaPerezosaException("No se encontro el archivo temporal: " + rutaArchivo);
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(
+					String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(), rutaArchivo));
 		} catch (IOException e) {
-			throw new CargaPerezosaException("Problemas de lectura con el archivo temporal: " + rutaArchivo);
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(
+					String.format(Mensajes.ERROR_ARCHIVO_SIN_PERMISOS_LECTURA.getMensaje(), rutaArchivo));
 		}
 		return cadenaArchivo.toString();
 	}
@@ -215,14 +248,17 @@ public class CargaPerezosaServiceImpl implements ICargaPerezosaService {
 			outStream.close();
 
 		} catch (IOException ex) {
+			LOGGER.warn(ex);
 			ex.printStackTrace();
 			try {
 				response.getWriter().print("IO Error: " + ex.getMessage());
 			} catch (IOException e) {
+				LOGGER.warn(e);
 				throw new CargaPerezosaException(e.getMessage());
 			}
 		} catch (Exception e) {
-			throw new CargaPerezosaException(e.getMessage());
+			LOGGER.error(e);
+			throw new CargaPerezosaException(Mensajes.ERROR_DESCONOCIDO.getMensaje());
 		}
 	}
 }

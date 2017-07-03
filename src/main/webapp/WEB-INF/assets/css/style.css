@@ -12,3 +12,7 @@ input[type=file] {
 	margin: 0 auto;
 	margin-bottom: 10px;
 }
+
+.mayuscula{
+	text-transform: uppercase;
+}

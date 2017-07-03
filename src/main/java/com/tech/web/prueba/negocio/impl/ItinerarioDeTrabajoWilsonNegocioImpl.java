@@ -10,12 +10,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.tech.web.prueba.dominio.ArticuloATrastiar;
 import com.tech.web.prueba.dominio.DiaDeTrabajo;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
+import com.tech.web.prueba.service.impl.CargaPerezosaServiceImpl;
+import com.tech.web.prueba.support.AdmonLogger;
+import com.tech.web.prueba.support.Constantes.Mensajes;
 
 /**
  * @author gerlinorlandotorressaavedra
@@ -23,6 +27,10 @@ import com.tech.web.prueba.negocio.IItinerarioDeTrabajoWilsonNegocio;
  */
 @Repository
 public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabajoWilsonNegocio {
+	/**
+	 * instancia logger
+	 */
+	private static final AdmonLogger LOGGER = AdmonLogger.getInstance(Logger.getLogger(ItinerarioDeTrabajoWilsonNegocioImpl.class));
 
 	private DiaDeTrabajo[] itinerarioDeTrabajo;
 	/**
@@ -95,7 +103,9 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 			}
 			b.close();
 		} catch (IOException e) {
-			throw new CargaPerezosaException(e.getMessage());
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(
+					String.format(Mensajes.ERROR_ARCHIVO_NO_ENCONTRADO.getMensaje(), rutaArchivo));
 		}
 	}
 
@@ -111,11 +121,11 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		try {
 			pesoDelArticuloATrastiar = Integer.parseInt(cadenaPesoDelArticuloATrastiar);
 			if (1 >= pesoDelArticuloATrastiar && 100 <= pesoDelArticuloATrastiar) {
-				throw new CargaPerezosaException(
-						"Error en el peso del articulo a trastear, se debe recibir un numero no menor que 1 y no mayor de 100");
+				throw new CargaPerezosaException(Mensajes.ERROR_RESTRICCION_PESO_ARTICULO.getMensaje());
 			}
 		} catch (NumberFormatException e) {
-			throw new CargaPerezosaException("Error en el peso del articulo a trastear, se debe recibir un numero");
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(Mensajes.ERROR_CASTING_PESO_ARTICULO.getMensaje());
 		}
 		itinerarioDeTrabajo[this.ordenDelDiaEnGestion - 1].getArticulosATrastiar()[this.ordenDelArticuloEnGestion]
 				.setNombre("Articulo" + (this.ordenDelDiaEnGestion - 1) + this.ordenDelArticuloEnGestion);
@@ -142,11 +152,11 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		try {
 			cantidadDeArticuloAtrastear = Integer.parseInt(cadenaCantidadDeArticuloAtrastear);
 			if (1 >= cantidadDeArticuloAtrastear && 100 <= cantidadDeArticuloAtrastear) {
-				throw new CargaPerezosaException(
-						"Error en la cantidad de articulos a trastear, se debe recibir un numero no menor que 1 y no mayor de 100");
+				throw new CargaPerezosaException(Mensajes.ERROR_RESTRICCION_CANTIDAD_ARTICULOS_TRATEAR.getMensaje());
 			}
 		} catch (NumberFormatException e) {
-			throw new CargaPerezosaException("Error en la cantidad de articulos a trastear, se debe recibir un numero");
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(Mensajes.ERROR_CASTING_CANTIDAD_ARTICULOS_TRASTEAR.getMensaje());
 		}
 		ArticuloATrastiar[] articulosATrastiar = new ArticuloATrastiar[cantidadDeArticuloAtrastear];
 		for (int i = 0; i < articulosATrastiar.length; i++) {
@@ -170,11 +180,11 @@ public class ItinerarioDeTrabajoWilsonNegocioImpl implements IItinerarioDeTrabaj
 		try {
 			cantidadDeDias = Integer.parseInt(cadenaCantidadDeDias);
 			if (1 >= cantidadDeDias && 500 <= cantidadDeDias) {
-				throw new CargaPerezosaException(
-						"Error en la cantidad de dias de trabajo, se debe recibir un numero no menor que 1 y no mayor de 500");
+				throw new CargaPerezosaException(Mensajes.ERROR_RESTRICCION_CANTIDAD_DIAS_LABORALES.getMensaje());
 			}
 		} catch (NumberFormatException e) {
-			throw new CargaPerezosaException("Error en la cantidad de dias de trabajo, se debe recibir un numero");
+			LOGGER.warn(e);
+			throw new CargaPerezosaException(Mensajes.ERROR_CASTING_CANTIDAD_DIAS_LABORALES.getMensaje());
 		}
 		itinerarioDeTrabajo = new DiaDeTrabajo[cantidadDeDias];
 		for (int i = 0; i < itinerarioDeTrabajo.length; i++) {

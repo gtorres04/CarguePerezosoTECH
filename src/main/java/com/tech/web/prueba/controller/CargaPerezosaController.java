@@ -23,6 +23,7 @@ import com.tech.web.prueba.dto.TrazaIntentoDto;
 import com.tech.web.prueba.exception.CargaPerezosaException;
 import com.tech.web.prueba.service.ICargaPerezosaService;
 import com.tech.web.prueba.support.AdmonLogger;
+import com.tech.web.prueba.support.Constantes.Mensajes;
 import com.tech.web.prueba.support.ConstantesMappingURL;
 
 @Controller
@@ -76,6 +77,7 @@ public class CargaPerezosaController {
 	@RequestMapping(value = ConstantesMappingURL.CARGAR_ARCHIVO_URL_MAPPING, method = RequestMethod.POST)
 	public String cargarInputCargaPerezosa(Model model, HttpServletRequest request) {
 		LOGGER.debug("Hola");
+		System.out.println(Mensajes.ERROR_DESCONOCIDO.getMensaje());
 		String view = ConstantesMappingURL.PAGINA_PRINCIPAL_PAG;
 		TrazaIntentoDto trazaIntentoDto = new TrazaIntentoDto();
 		trazaIntentoDto.setFechaEjecucion(new Date());

@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Cargue Perezoso</title>
+<title><fmt:message key="title.tituloprincipal" bundle="${lang}" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <%@include file="includes/contexto.jsp"%>
 </head>
@@ -18,7 +18,8 @@
 					class="icon-bar"></span> <span class="icon-bar"></span> <span
 					class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Cargue Perezoso</a>
+			<a class="navbar-brand" href="#"><fmt:message
+					key="title.tituloprincipal" bundle="${lang}" /></a>
 		</div>
 
 		<!-- Agrupar los enlaces de navegación, los formularios y cualquier
@@ -30,12 +31,15 @@
 				enctype="multipart/form-data">
 				<div class="form-group">
 					<input type="number" class="form-control"
-						placeholder="Digite cédula" id="cedula" name="cedula">
+						placeholder="<fmt:message key="placeholder.input.cedula" bundle="${lang}" />"
+						id="cedula" name="cedula">
 				</div>
 				<div class="form-group">
 					<input class="form-control" type="file" name="archivo" id="archivo">
 				</div>
-				<button type="submit" class="btn btn-default">Enviar</button>
+				<button type="submit" class="btn btn-default">
+					<fmt:message key="boton.enviar.input" bundle="${lang}" />
+				</button>
 			</form>
 		</div>
 	</nav>
@@ -43,33 +47,37 @@
 		<c:when test="${!empty trazaIntento}">
 			<div class="panel-respuesta panel panel-primary">
 				<div class="panel-heading">
-					<h3 class="panel-title">Resultado de procesamiento</h3>
+					<h3 class="panel-title">
+						<fmt:message key="title.panel.titulo_resultado" bundle="${lang}" />
+					</h3>
 				</div>
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-md-1">
-							<b>Cedula</b>
+							<b><fmt:message key="label.cedula" bundle="${lang}" /></b>
 						</div>
 						<div class="col-md-1">${trazaIntento.cedula}</div>
 						<div class="col-md-1">
-							<b>Fecha</b>
+							<b><fmt:message key="label.fecha" bundle="${lang}" /></b>
 						</div>
 						<div class="col-md-3">${trazaIntento.fechaEjecucion}</div>
 						<div class="col-md-1">
-							<b>Entrada</b>
+							<b><fmt:message key="label.entrada" bundle="${lang}" /></b>
 						</div>
 						<div class="col-md-2">
 							<a
 								href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span
-								class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+								class="glyphicon glyphicon-cloud-download"></span>
+							<fmt:message key="label.descarga" bundle="${lang}" /></a>
 						</div>
 						<div class="col-md-1">
-							<b>Salida</b>
+							<b><fmt:message key="label.salida" bundle="${lang}" /></b>
 						</div>
 						<div class="col-md-2">
 							<a
 								href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span
-								class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+								class="glyphicon glyphicon-cloud-download"></span>
+							<fmt:message key="label.descarga" bundle="${lang}" /></a>
 						</div>
 					</div>
 				</div>
@@ -80,21 +88,23 @@
 		<c:when test="${!empty historialTrazaIntento}">
 			<div class="panel-historial panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Historial de Cargue Perezoso</h3>
+					<h3 class="panel-title">
+						<fmt:message key="title.panel.titulo_historial" bundle="${lang}" />
+					</h3>
 				</div>
 				<div class="panel-body">
 					<div class="row">
-						<div class="col-md-1">
-							<b>CEDULA</b>
+						<div class="mayuscula col-md-1">
+							<b><fmt:message key="label.cedula" bundle="${lang}" /></b>
 						</div>
-						<div class="col-md-3">
-							<b>FECHA</b>
+						<div class="mayuscula col-md-3">
+							<b><fmt:message key="label.fecha" bundle="${lang}" /></b>
 						</div>
-						<div class="col-md-2">
-							<b>ENTRADA</b>
+						<div class="mayuscula col-md-2">
+							<b><fmt:message key="label.entrada" bundle="${lang}" /></b>
 						</div>
-						<div class="col-md-2">
-							<b>SALIDA</b>
+						<div class="mayuscula col-md-2">
+							<b><fmt:message key="label.salida" bundle="${lang}" /></b>
 						</div>
 					</div>
 					<c:forEach items="${historialTrazaIntento}" var="trazaIntento">
@@ -104,12 +114,14 @@
 							<div class="col-md-2">
 								<a
 									href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoInput.nombreTemporal}"><span
-									class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+									class="glyphicon glyphicon-cloud-download"></span>
+								<fmt:message key="label.descarga" bundle="${lang}" /></a>
 							</div>
 							<div class="col-md-2">
 								<a
 									href="<%=CONTEXTO_APPLICATION + ConstantesMappingURL.DESCARGAR_ARCHIVO_OUTPUT_URL_MAPPING%>${trazaIntento.archivoOutput.nombreTemporal}"><span
-									class="glyphicon glyphicon-cloud-download"></span>Descargar</a>
+									class="glyphicon glyphicon-cloud-download"></span>
+								<fmt:message key="label.descarga" bundle="${lang}" /></a>
 							</div>
 						</div>
 					</c:forEach>
